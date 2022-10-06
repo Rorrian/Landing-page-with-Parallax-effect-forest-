@@ -1,0 +1,201 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Определение переменных */
+:root {
+    /* Переменная-коэфф., зависящая от размера экрана, для соразмерного отображения остальных эл-в(текст конкретного размера при опр. размере экрана)  */
+    --index: calc(1vw + 1vh);
+    --textColor: #e7e7e0;
+    --transition: transform .75s cubic-bezier(.075, .5, 0, 1);
+}
+
+/* Подключение шрифтов */
+@font-face {
+    font-family: Raleway_f;
+    src: url(../fonts/raleway-regular.woff2);
+}
+
+@font-face {
+    font-family: Raleway_f;
+    src: url(../fonts/raleway-black.woff2);
+    font-weight: 900;
+}
+
+body {
+    background-color: #010101;
+    font-family: Raleway_f, sans-serif;
+    line-height: 1.55;
+}
+
+.main-header {
+    position: relative;
+}
+
+/* Псевдоэлемент - накладываемаяя поверх картинка для сокрытия границ перехода одного фона(фото леса) в другой(фото пещеры) */
+.main-header::after {
+    content: "";
+    position: absolute;
+    z-index: 100;
+    width: 100%;
+    height: calc(var(--index) * 10);
+    background-image: url("../img/ground.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    /* Позиционируем в зависимости от индекса, так как высота рассчитывается тоже от него */
+    /* Отрицательное значение для сдвига вверх */
+    bottom: calc(var(--index) * -4.5);
+}
+
+.layers {
+    height: 100vh; /* Равна высоте экрана */
+
+    /* Размещаем текст по центру */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    /* Чтобы при срабатывании параллакса статичное изображение(задний фон) не был виден при прокручивании */
+    overflow: hidden;
+    position: relative;
+}
+
+.layer {
+    /* Картинка занимает все пространство и по центру */
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    background-size: cover;
+    background-position: center;
+
+    /* Отслеживание изменений свойства transform(так как оно помогает создать параллакс-эффект) для лучше производительности и оптимизации.
+    Анимация будет плавнее и элементы будут отрисовываться быстрее*/
+    will-change: transform;
+
+    /* Для отображения текста "на 1 слое" */
+    z-index: 2;
+
+    transition: var(--transition);
+}
+
+/* ! Суть параллакса на примере:
+ Есть общий div со слоями. В нем есть 3 слоя:
+ 1 - дальний(цельная исходная картинка)
+ 2 - средний(содержит часть исходного изображения)
+ 3 - передний (небольшая часть исходного изображения)
+
+ Все слои позиционируются абсолютно относительно общего контейнера.
+ Мы считываем кол-во пикселей из JS и передаем это значение в CSS(добавляем значение px в стили тега <html> с помощью созданной переменной --scrollTop).
+ Используем свойство transform для смещения по оси Y каждого слоя. Но смещаем на разные значения:
+ Для 1 дальнего слоя мы замедляем реальную скорость скролла в 2 раза = указываем значение в px, на кот. нужно сдвинуть вверх слой, меньше в 2 раза, чем то на кот. была прокручена страница .
+ Каждый следующий слой замедляем еще сильнее.
+ */
+
+/* Самый дальний фон */
+.layers__base {
+    /* Получаем переменную из стилей тега <html> */
+
+    /* Делим на 1.6 чтобы уменьшить скорость с которой прокручивается фон */
+    transform: translate3d(0, calc(var(--scrollTop) / 1.6), 0);
+
+    /* Для отображения текста "на 1 слое" */
+    z-index: 0;
+}
+
+.layers__middle {
+    /* Аналогично 1 дальнему слою. Но указываем число больше для меньшей скорости скролла картинки = 2 среднего слоя */
+    transform: translate3d(0, calc(var(--scrollTop) / 2.5), 0);
+}
+
+.layers__front {
+    /* Аналогично 2 слою. Но еще медленнее */
+    transform: translate3d(0, calc(var(--scrollTop) / 5.7), 0);
+}
+
+.layers__header {
+    /* Для отображения текста "на 1 слое" он должен быть поверх него и двигаться с такой же скоростью */
+    z-index: 1;
+    transform: translate3d(0, calc(var(--scrollTop) / 2), 0);
+    transition: var(--transition);
+    will-change: transform;
+
+    text-transform: uppercase;
+    font-weight: 900;
+    color: var(--textColor);
+    /* Эффект свечения текста */
+    text-shadow: 0 0 15px #9d822b;
+}
+
+.layers__title {
+    font-size: calc(var(--index) * 2.5);
+    letter-spacing: calc(var(--index) / 2.25);;
+}
+
+.layers__caption {
+    font-size: calc(var(--index) / 1.175);
+    letter-spacing: calc(var(--index) / 3.5);
+
+    margin-top: calc(var(--index) * -0.75);
+}
+
+.main-article {
+    /* Переменную можно инициализировать и в классе */
+    --main-article-transform: translate3d(0, calc(var(--scrollTop) / -7.5), 0);
+
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+    /* Использование переменных */
+    color: var(--textColor);
+
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    text-align: center;
+
+    position: relative;
+}
+
+.main-article__header{
+    text-transform: uppercase;
+    font-size: calc(var(--index) * 1.8);
+    letter-spacing: calc(var(--index) / 7.5);
+
+    transform: var(--main-article-transform);
+    transition: var(--transition);
+    will-change: transform;
+}
+
+.main-article__text{
+    max-width: calc(var(--index) * 28);
+    font-size: calc(var(--index) * .9);
+    margin-top: calc(var(--index) / 1.25);
+
+    transform: var(--main-article-transform);
+    transition: var(--transition);
+    will-change: transform;
+}
+.copy{
+    position: absolute;
+    bottom: calc(var(--index) * 2.5);
+    opacity: 0.45;
+    font-size: calc(var(--index) * .75);
+    letter-spacing: calc(var(--index) / 37.5);
+}
+
+/* При использовании библиотеки gsap нужно дополнительно указывать данное свойство*/
+.content{
+    will-change: transform;
+}
+
+
+
+
+
+
+
+
