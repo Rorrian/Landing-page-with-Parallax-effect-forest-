@@ -1,3 +1,7 @@
-# Landing-page-with-Parallax-effect-forest-
+# Лендинг с параллакс-эффектом
 
-Лендинг с параллакс-эффектом с ипользованием GSAP(библиотека JavaScript для веб-анимации)
+* Параллакс-эффект с многослойным изображением при скролле
+* Библиотека GSAP(библиотека JavaScript для веб-анимации)
+
+Deployment:  
+https://rorrian.github.io/Landing-page-with-Parallax-effect-forest-/
